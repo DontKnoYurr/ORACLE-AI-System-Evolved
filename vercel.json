@@ -1,7 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "cd Code-Feature-Evolve/artifacts/oracle && pnpm install && pnpm build",
-  "outputDirectory": "Code-Feature-Evolve/artifacts/oracle/dist",
+  "buildCommand": "pnpm install && pnpm --filter @workspace/oracle build",
+  "outputDirectory": "artifacts/oracle/dist",
+  "framework": "vite",
   "rewrites": [
     {
       "source": "/(.*)",
