@@ -19,20 +19,32 @@ export class OracleBrain {
     });
   }
 
+  /**
+   * Groundbreaking reasoning engine that combines user query with retrieved knowledge.
+   */
   async ask(question: string, context: any = {}) {
+    // 1. Search for relevant knowledge in the vector database
+    const searchResults = await this.search(question, 3);
+    const retrievedContext = searchResults.documents[0]?.join("\n\n") || "No specific proprietary knowledge found for this query.";
+
+    // 2. Construct the groundbreaking prompt
     const prompt = PromptTemplate.fromTemplate(`
       SYSTEM: You are the ORACLE Brain, a proprietary predictive intelligence system.
-      Use the following context to provide a groundbreaking, forward-looking analysis.
+      Your goal is to provide groundbreaking, forward-looking analysis based on the user's private knowledge base.
       
-      CONTEXT:
-      {context}
+      PROPRIETARY_KNOWLEDGE_CONTEXT:
+      {retrievedContext}
       
-      USER QUESTION:
+      SYSTEM_STATE_CONTEXT:
+      {systemContext}
+      
+      USER_QUERY:
       {question}
       
-      ORACLE ANALYSIS:
+      ORACLE_ANALYSIS_VERDICT:
     `);
 
+    // 3. Execute the reasoning chain
     const chain = RunnableSequence.from([
       prompt,
       this.model,
@@ -41,10 +53,14 @@ export class OracleBrain {
 
     const response = await chain.invoke({
       question,
-      context: JSON.stringify(context, null, 2),
+      retrievedContext,
+      systemContext: JSON.stringify(context, null, 2),
     });
 
-    return response;
+    return {
+      response,
+      sources: searchResults.metadatas[0] || [],
+    };
   }
 
   async ingest(text: string, metadata: any = {}) {
@@ -53,7 +69,7 @@ export class OracleBrain {
     });
 
     await collection.add({
-      ids: [Date.now().toString()],
+      ids: [Date.now().toString() + Math.random().toString(36).substring(7)],
       metadatas: [metadata],
       documents: [text],
     });

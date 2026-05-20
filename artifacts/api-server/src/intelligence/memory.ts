@@ -9,6 +9,10 @@ export class KnowledgeEngine {
     this.vaultPath = vaultPath;
   }
 
+  /**
+   * Syncs the local Obsidian vault with the vector database.
+   * This is the "Long-Term Memory" of the ORACLE Brain.
+   */
   async syncVault() {
     try {
       const files = await this.recursiveReadDir(this.vaultPath);
@@ -18,11 +22,19 @@ export class KnowledgeEngine {
         const content = await fs.readFile(file, "utf-8");
         const relativePath = path.relative(this.vaultPath, file);
         
-        await brain.ingest(content, {
-          source: "obsidian",
-          path: relativePath,
-          lastModified: (await fs.stat(file)).mtime.toISOString(),
-        });
+        // Advanced Chunking: Split by headers or paragraphs to maintain context
+        const chunks = this.chunkContent(content);
+        
+        for (let i = 0; i < chunks.length; i++) {
+          await brain.ingest(chunks[i], {
+            source: "obsidian",
+            path: relativePath,
+            chunkIndex: i,
+            totalChunks: chunks.length,
+            lastModified: (await fs.stat(file)).mtime.toISOString(),
+            title: path.basename(file, ".md"),
+          });
+        }
       }
       
       return { success: true, count: mdFiles.length };
@@ -30,6 +42,31 @@ export class KnowledgeEngine {
       console.error("Vault sync error:", error);
       return { success: false, error };
     }
+  }
+
+  /**
+   * Splits content into manageable chunks while preserving semantic meaning.
+   */
+  private chunkContent(content: string, maxLength: number = 1500): string[] {
+    // Simple chunking by paragraph for now, can be upgraded to recursive character splitting
+    const paragraphs = content.split(/\n\n+/);
+    const chunks: string[] = [];
+    let currentChunk = "";
+
+    for (const p of paragraphs) {
+      if ((currentChunk + p).length > maxLength && currentChunk.length > 0) {
+        chunks.push(currentChunk.trim());
+        currentChunk = p;
+      } else {
+        currentChunk += (currentChunk ? "\n\n" : "") + p;
+      }
+    }
+    
+    if (currentChunk.trim()) {
+      chunks.push(currentChunk.trim());
+    }
+    
+    return chunks;
   }
 
   private async recursiveReadDir(dir: string): Promise<string[]> {

@@ -2,12 +2,19 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Brain, Database, Search, RefreshCw, Zap } from "lucide-react";
+import { Brain, Database, Search, RefreshCw, Zap, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+interface Source {
+  title: string;
+  path: string;
+  source: string;
+}
 
 export default function BrainPage() {
   const [question, setQuestion] = useState("");
   const [response, setResponse] = useState("");
+  const [sources, setSources] = useState<Source[]>([]);
   const [isAsking, setIsAsking] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const { toast } = useToast();
@@ -23,6 +30,7 @@ export default function BrainPage() {
       });
       const data = await res.json();
       setResponse(data.response);
+      setSources(data.sources || []);
     } catch (error) {
       toast({ title: "Brain Error", description: "Failed to get response from ORACLE Brain", variant: "destructive" });
     } finally {
@@ -80,10 +88,27 @@ export default function BrainPage() {
               {isAsking ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               EXECUTE_REASONING
             </Button>
+            
             {response && (
-              <div className="mt-6 p-4 border border-primary/20 bg-primary/5 rounded-sm">
-                <div className="text-[10px] font-bold text-primary mb-2">ORACLE_RESPONSE</div>
-                <div className="text-sm leading-relaxed whitespace-pre-wrap">{response}</div>
+              <div className="mt-6 space-y-4">
+                <div className="p-4 border border-primary/20 bg-primary/5 rounded-sm">
+                  <div className="text-[10px] font-bold text-primary mb-2">ORACLE_RESPONSE</div>
+                  <div className="text-sm leading-relaxed whitespace-pre-wrap">{response}</div>
+                </div>
+                
+                {sources.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Retrieved Knowledge Sources</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {sources.map((source, i) => (
+                        <div key={i} className="flex items-center gap-2 p-2 border border-border bg-card/30 text-[10px] font-mono">
+                          <FileText className="h-3 w-3 text-primary/60" />
+                          <span className="truncate">{source.title || source.path}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
@@ -127,4 +152,5 @@ export default function BrainPage() {
         </Card>
       </div>
     </div>
+  );
 }
