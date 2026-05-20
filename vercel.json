@@ -1,1 +1,28 @@
-{\n  \"version\": 2,\n  \"buildCommand\": \"cd Code-Feature-Evolve/artifacts/oracle && pnpm install && pnpm build\",\n  \"outputDirectory\": \"Code-Feature-Evolve/artifacts/oracle/dist\",\n  \"rewrites\": [\n    {\n      \"source\": \"/(.*)\",\n      \"destination\": \"/index.html\"\n    }\n  ]\n}\n
+{
+  "version": 2,
+  "buildCommand": "cd Code-Feature-Evolve/artifacts/oracle && pnpm install && pnpm build",
+  "outputDirectory": "Code-Feature-Evolve/artifacts/oracle/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/oracle",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/control",
+      "destination": "/integrated-control-center",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/integrated-control-center",
+      "permanent": false
+    }
+  ]
+}
