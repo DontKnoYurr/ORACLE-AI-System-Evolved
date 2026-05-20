@@ -4,7 +4,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { Layout } from "@/components/layout";
-
 // Pages
 import Dashboard from "@/pages/dashboard";
 import Signals from "@/pages/signals";
@@ -18,6 +17,7 @@ import Seismic from "@/pages/seismic";
 import Quantum from "@/pages/quantum";
 import Temporal from "@/pages/temporal";
 import Neural from "@/pages/neural";
+import BrainPage from "@/pages/brain";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +44,7 @@ function Router() {
         <Route path="/quantum" component={Quantum} />
         <Route path="/temporal" component={Temporal} />
         <Route path="/neural" component={Neural} />
+        <Route path="/brain" component={BrainPage} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

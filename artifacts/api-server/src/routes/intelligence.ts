@@ -1,31 +1,35 @@
-/**
- * ORACLE Intelligence Harvester Routes
- * Web intelligence gathering and status endpoints.
- */
 import { Router } from "express";
-import { runHarvest, getHarvesterStatus, startHarvestLoop } from "../intelligence/harvester.js";
+import { brain } from "../intelligence/brain.js";
+import { memory } from "../intelligence/memory.js";
 
 const router = Router();
 
-// Start the autonomous harvest loop when this route is first mounted
-startHarvestLoop();
-
-/**
- * GET /intelligence/status — harvester status and config
- */
-router.get("/intelligence/status", (req, res) => {
-  return res.json(getHarvesterStatus());
+router.post("/ask", async (req, res) => {
+  try {
+    const { question, context } = req.body;
+    const response = await brain.ask(question, context);
+    res.json({ response });
+  } catch (error) {
+    res.status(500).json({ error: "Brain inference error" });
+  }
 });
 
-/**
- * POST /intelligence/harvest — manually trigger a harvest cycle
- */
-router.post("/intelligence/harvest", async (req, res) => {
+router.post("/sync", async (req, res) => {
   try {
-    const result = await runHarvest();
-    return res.json(result);
-  } catch (err: any) {
-    return res.status(500).json({ error: "Harvest failed", details: err.message });
+    const result = await memory.syncVault();
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: "Memory sync error" });
+  }
+});
+
+router.get("/search", async (req, res) => {
+  try {
+    const { q } = req.query;
+    const results = await brain.search(q as string);
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ error: "Memory search error" });
   }
 });
 
