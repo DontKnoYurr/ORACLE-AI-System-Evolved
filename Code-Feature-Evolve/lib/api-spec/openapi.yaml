@@ -1,0 +1,1701 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: ORACLE Predictive Intelligence Platform API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+  - name: signals
+  - name: entities
+  - name: predictions
+  - name: anomalies
+  - name: agents
+  - name: simulations
+  - name: oracle
+  - name: world
+  - name: seismic
+  - name: quantum
+  - name: temporal
+  - name: training
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # ─── SIGNALS ────────────────────────────────────────────────────────────────
+  /signals:
+    get:
+      operationId: listSignals
+      tags: [signals]
+      summary: List intelligence signals
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: priority
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Signal"
+    post:
+      operationId: ingestSignal
+      tags: [signals]
+      summary: Ingest a new signal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignalInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Signal"
+
+  /signals/{id}/expand:
+    post:
+      operationId: expandSignal
+      tags: [signals]
+      summary: AI-expand a signal with deep analysis
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignalExpansion"
+
+  # ─── ENTITIES ───────────────────────────────────────────────────────────────
+  /entities:
+    get:
+      operationId: listEntities
+      tags: [entities]
+      summary: List world entities
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Entity"
+    post:
+      operationId: createEntity
+      tags: [entities]
+      summary: Create a new entity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EntityInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Entity"
+
+  /entities/relationships:
+    get:
+      operationId: listRelationships
+      tags: [entities]
+      summary: List entity relationships
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Relationship"
+
+  # ─── PREDICTIONS ─────────────────────────────────────────────────────────────
+  /predictions:
+    get:
+      operationId: listPredictions
+      tags: [predictions]
+      summary: List predictions
+      parameters:
+        - name: horizon
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Prediction"
+
+  /predictions/generate:
+    post:
+      operationId: generatePredictions
+      tags: [predictions]
+      summary: Generate new AI predictions
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Prediction"
+
+  /predictions/{id}/expand:
+    post:
+      operationId: expandPrediction
+      tags: [predictions]
+      summary: Expand a prediction with full analysis
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PredictionExpansion"
+
+  # ─── ANOMALIES ───────────────────────────────────────────────────────────────
+  /anomalies:
+    get:
+      operationId: listAnomalies
+      tags: [anomalies]
+      summary: List detected anomalies
+      parameters:
+        - name: severity
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Anomaly"
+
+  /anomalies/{id}/explain:
+    post:
+      operationId: explainAnomaly
+      tags: [anomalies]
+      summary: Generate AI explanation for anomaly
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnomalyExplanation"
+
+  # ─── AGENTS ──────────────────────────────────────────────────────────────────
+  /agents/sessions:
+    get:
+      operationId: listAgentSessions
+      tags: [agents]
+      summary: List agent council sessions
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AgentSession"
+
+  /agents/council:
+    post:
+      operationId: runAgentCouncil
+      tags: [agents]
+      summary: Run multi-agent council deliberation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentCouncilInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentSession"
+
+  /agents/reflect:
+    post:
+      operationId: runSelfReflection
+      tags: [agents]
+      summary: Run system self-reflection
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SelfReflection"
+
+  # ─── SIMULATIONS ─────────────────────────────────────────────────────────────
+  /simulations:
+    get:
+      operationId: listSimulations
+      tags: [simulations]
+      summary: List simulations
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Simulation"
+    post:
+      operationId: createSimulation
+      tags: [simulations]
+      summary: Create a simulation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SimulationInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Simulation"
+
+  /simulations/{id}/run:
+    post:
+      operationId: runSimulation
+      tags: [simulations]
+      summary: Execute a simulation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Simulation"
+
+  # ─── ORACLE CHAT ─────────────────────────────────────────────────────────────
+  /oracle/conversations:
+    get:
+      operationId: listConversations
+      tags: [oracle]
+      summary: List oracle conversations
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+
+  /oracle/conversations/{id}/messages:
+    get:
+      operationId: getConversationMessages
+      tags: [oracle]
+      summary: Get messages for a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+
+  /oracle/ask:
+    post:
+      operationId: askOracle
+      tags: [oracle]
+      summary: Ask Oracle a question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OracleQuestion"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OracleAnswer"
+
+  # ─── WORLD STATE ─────────────────────────────────────────────────────────────
+  /world/state:
+    get:
+      operationId: getWorldState
+      tags: [world]
+      summary: Get current world state
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorldState"
+
+  /world/explain:
+    post:
+      operationId: explainWorldState
+      tags: [world]
+      summary: AI explanation of world state
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorldStateExplanation"
+
+  /world/dashboard:
+    get:
+      operationId: getDashboardSummary
+      tags: [world]
+      summary: Get dashboard summary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  # ─── SEISMIC INTELLIGENCE ────────────────────────────────────────────────────
+  /seismic/events:
+    get:
+      operationId: listSeismicEvents
+      tags: [seismic]
+      summary: List seismic intelligence events (infrasonic layer)
+      parameters:
+        - name: resonanceType
+          in: query
+          schema:
+            type: string
+            enum: [danger, mourning, communication, mating, territorial, unknown]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SeismicEvent"
+    post:
+      operationId: recordSeismicEvent
+      tags: [seismic]
+      summary: Record a seismic intelligence event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SeismicEventInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SeismicEvent"
+
+  /seismic/resonance:
+    get:
+      operationId: getResonanceState
+      tags: [seismic]
+      summary: Get current global resonance/emotional state
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResonanceState"
+
+  /seismic/propagation:
+    post:
+      operationId: computePropagation
+      tags: [seismic]
+      summary: Compute signal propagation wave from epicenter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PropagationInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PropagationResult"
+
+  # ─── QUANTUM FIELD ───────────────────────────────────────────────────────────
+  /quantum/field:
+    get:
+      operationId: getQuantumField
+      tags: [quantum]
+      summary: Get current quantum probability field state
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuantumField"
+
+  /quantum/nodes:
+    get:
+      operationId: listQuantumNodes
+      tags: [quantum]
+      summary: List quantum attractor/repeller nodes
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QuantumNode"
+
+  /quantum/collapse:
+    post:
+      operationId: collapseWaveFunction
+      tags: [quantum]
+      summary: Collapse probability wave at a point (user interaction)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WaveFunctionCollapseInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WaveFunctionCollapseResult"
+
+  /quantum/superposition:
+    get:
+      operationId: getSuperposition
+      tags: [quantum]
+      summary: Get quantum superposition of possible futures
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuantumSuperposition"
+
+  # ─── TEMPORAL THREAT AXIS ────────────────────────────────────────────────────
+  /temporal/threats:
+    get:
+      operationId: listTemporalThreats
+      tags: [temporal]
+      summary: List threats across the temporal axis (30s → 30yr)
+      parameters:
+        - name: horizonMin
+          in: query
+          schema:
+            type: string
+            description: Minimum horizon (e.g. "30s", "1h", "1d", "1y")
+        - name: horizonMax
+          in: query
+          schema:
+            type: string
+        - name: severity
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TemporalThreat"
+
+  /temporal/threats/immediate:
+    get:
+      operationId: getImmediateThreats
+      tags: [temporal]
+      summary: Get threats incoming within seconds to minutes
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TemporalThreat"
+
+  /temporal/scan:
+    post:
+      operationId: runTemporalScan
+      tags: [temporal]
+      summary: Run full temporal scan across all horizons
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemporalScanResult"
+
+  # ─── TRAINING ────────────────────────────────────────────────────────────────
+  /training/status:
+    get:
+      operationId: getTrainingStatus
+      tags: [training]
+      summary: Get autonomous training status
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrainingStatus"
+
+  /training/interact:
+    post:
+      operationId: recordInteraction
+      tags: [training]
+      summary: Record user interaction as training signal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InteractionInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InteractionResult"
+
+  /training/cycle:
+    post:
+      operationId: runTrainingCycle
+      tags: [training]
+      summary: Trigger autonomous training cycle
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrainingCycleResult"
+
+  /training/history:
+    get:
+      operationId: getTrainingHistory
+      tags: [training]
+      summary: Get training cycle history
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TrainingCycleResult"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+
+    Signal:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+        priority:
+          type: string
+        source:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+      required: [id, title, content, category, priority, createdAt]
+
+    SignalInput:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+        priority:
+          type: string
+        source:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+      required: [title, content, category, priority]
+
+    SignalExpansion:
+      type: object
+      properties:
+        signalId:
+          type: integer
+        deepAnalysis:
+          type: string
+        relatedEntities:
+          type: array
+          items:
+            type: string
+        implications:
+          type: array
+          items:
+            type: string
+        confidence:
+          type: number
+        seismicResonance:
+          type: string
+          nullable: true
+      required: [signalId, deepAnalysis, relatedEntities, implications, confidence]
+
+    Entity:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+          nullable: true
+        influence:
+          type: number
+        stability:
+          type: number
+        metadata:
+          $ref: "#/components/schemas/EntityMetadata"
+        createdAt:
+          type: string
+      required: [id, name, type, influence, stability, createdAt]
+
+    EntityInput:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+          nullable: true
+        influence:
+          type: number
+        stability:
+          type: number
+      required: [name, type, influence, stability]
+
+    EntityMetadata:
+      type: object
+      properties:
+        quantumEntanglement:
+          type: ["number", "null"]
+        seismicSignature:
+          type: ["string", "null"]
+
+    Relationship:
+      type: object
+      properties:
+        id:
+          type: integer
+        sourceId:
+          type: integer
+        targetId:
+          type: integer
+        type:
+          type: string
+        strength:
+          type: number
+        createdAt:
+          type: string
+      required: [id, sourceId, targetId, type, strength, createdAt]
+
+    RelationshipInput:
+      type: object
+      properties:
+        sourceId:
+          type: integer
+        targetId:
+          type: integer
+        type:
+          type: string
+        strength:
+          type: number
+      required: [sourceId, targetId, type, strength]
+
+    Prediction:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        probability:
+          type: number
+        horizon:
+          type: string
+        impact:
+          type: string
+        domain:
+          type: string
+        temporalScale:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required: [id, title, description, probability, horizon, impact, domain, createdAt]
+
+    PredictionExpansion:
+      type: object
+      properties:
+        predictionId:
+          type: integer
+        fullAnalysis:
+          type: string
+        keyFactors:
+          type: array
+          items:
+            type: string
+        scenarios:
+          type: array
+          items:
+            $ref: "#/components/schemas/PredictionExpansionScenariosItem"
+        confidence:
+          type: number
+      required: [predictionId, fullAnalysis, keyFactors, scenarios, confidence]
+
+    PredictionExpansionScenariosItem:
+      type: object
+      properties:
+        name:
+          type: string
+        probability:
+          type: number
+        description:
+          type: string
+      required: [name, probability, description]
+
+    Anomaly:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        severity:
+          type: string
+        category:
+          type: string
+        detectedAt:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/AnomalyMetadata"
+      required: [id, title, description, severity, category, detectedAt]
+
+    AnomalyMetadata:
+      type: object
+      properties:
+        affectedEntities:
+          type: array
+          items:
+            type: string
+        signalIds:
+          type: array
+          items:
+            type: integer
+
+    AnomalyExplanation:
+      type: object
+      properties:
+        anomalyId:
+          type: integer
+        detailedDescription:
+          type: string
+        rootCauses:
+          type: array
+          items:
+            type: string
+        sources:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnomalyExplanationSourcesItem"
+        impact:
+          type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+      required: [anomalyId, detailedDescription, rootCauses, sources, impact, recommendations]
+
+    AnomalyExplanationSourcesItem:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+          nullable: true
+        credibility:
+          type: number
+      required: [name, credibility]
+
+    AgentSession:
+      type: object
+      properties:
+        id:
+          type: integer
+        topic:
+          type: string
+        context:
+          type: string
+          nullable: true
+        agents:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentSessionAgentsItem"
+        consensus:
+          type: string
+          nullable: true
+        consensusScore:
+          type: number
+          nullable: true
+        status:
+          type: string
+        createdAt:
+          type: string
+      required: [id, topic, agents, status, createdAt]
+
+    AgentSessionAgentsItem:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+        stance:
+          type: string
+        confidence:
+          type: number
+        reasoning:
+          type: string
+          nullable: true
+      required: [name, role, stance, confidence]
+
+    AgentCouncilInput:
+      type: object
+      properties:
+        topic:
+          type: string
+        context:
+          type: string
+          nullable: true
+      required: [topic]
+
+    SelfReflection:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        calibration:
+          type: number
+        blindspots:
+          type: array
+          items:
+            type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+        overallAssessment:
+          type: string
+      required: [timestamp, calibration, blindspots, recommendations, overallAssessment]
+
+    Simulation:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        outcomes:
+          $ref: "#/components/schemas/SimulationOutcomes"
+        parameters:
+          $ref: "#/components/schemas/SimulationParameters"
+        createdAt:
+          type: string
+      required: [id, name, description, status, createdAt]
+
+    SimulationInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        parameters:
+          $ref: "#/components/schemas/SimulationInputParameters"
+      required: [name, description]
+
+    SimulationInputParameters:
+      type: object
+      properties:
+        iterations:
+          type: ["integer", "null"]
+        timeHorizon:
+          type: ["string", "null"]
+
+    SimulationOutcomes:
+      type: object
+      properties:
+        primary:
+          type: string
+        probability:
+          type: number
+        alternatives:
+          type: array
+          items:
+            type: string
+
+    SimulationParameters:
+      type: object
+      additionalProperties: true
+
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, title, createdAt, updatedAt]
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+        conversationId:
+          type: integer
+        role:
+          type: string
+        content:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/MessageMetadata"
+        createdAt:
+          type: string
+      required: [id, conversationId, role, content, createdAt]
+
+    MessageMetadata:
+      type: object
+      properties:
+        agents:
+          type: array
+          items:
+            type: string
+        confidence:
+          type: ["number", "null"]
+
+    OracleQuestion:
+      type: object
+      properties:
+        question:
+          type: string
+        conversationId:
+          type: integer
+          nullable: true
+        context:
+          type: string
+          nullable: true
+      required: [question]
+
+    OracleAnswer:
+      type: object
+      properties:
+        answer:
+          type: string
+        conversationId:
+          type: integer
+        confidence:
+          type: number
+        sources:
+          type: array
+          items:
+            type: string
+        agentVotes:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentSessionAgentsItem"
+      required: [answer, conversationId, confidence]
+
+    WorldState:
+      type: object
+      properties:
+        globalInstability:
+          type: number
+        geopoliticalTension:
+          type: number
+        economicVolatility:
+          type: number
+        informationWarfare:
+          type: number
+        climateStress:
+          type: number
+        techDisruption:
+          type: number
+        trends:
+          type: object
+          additionalProperties:
+            type: string
+        regions:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorldStateRegionsItem"
+        updatedAt:
+          type: string
+      required: [globalInstability, geopoliticalTension, economicVolatility, informationWarfare, climateStress, techDisruption, updatedAt]
+
+    WorldStateRegionsItem:
+      type: object
+      properties:
+        name:
+          type: string
+        instability:
+          type: number
+        primaryThreat:
+          type: string
+      required: [name, instability, primaryThreat]
+
+    WorldStateExplanation:
+      type: object
+      properties:
+        globalInstabilityExplanation:
+          type: string
+        metricExplanations:
+          type: object
+          additionalProperties:
+            type: string
+        recentDrivers:
+          type: array
+          items:
+            type: string
+        outlook:
+          type: string
+      required: [globalInstabilityExplanation, metricExplanations, recentDrivers, outlook]
+
+    DashboardSummary:
+      type: object
+      properties:
+        activeSignals:
+          type: integer
+        criticalAnomalies:
+          type: integer
+        activePredictions:
+          type: integer
+        globalInstability:
+          type: number
+        recentActivity:
+          type: array
+          items:
+            type: string
+        immediateThreats:
+          type: integer
+        trainingProgress:
+          type: number
+      required: [activeSignals, criticalAnomalies, activePredictions, globalInstability, recentActivity, immediateThreats, trainingProgress]
+
+    Pattern:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        frequency:
+          type: number
+        lastSeen:
+          type: string
+      required: [id, name, description, frequency, lastSeen]
+
+    # ─── SEISMIC SCHEMAS ──────────────────────────────────────────────────────
+    SeismicEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        resonanceType:
+          type: string
+          enum: [danger, mourning, communication, mating, territorial, unknown]
+        frequency:
+          type: number
+          description: Hz - infrasonic range (0.1-20Hz)
+        amplitude:
+          type: number
+          description: Normalized 0-1
+        propagationRange:
+          type: number
+          description: km radius of effect
+        epicenterRegion:
+          type: string
+        affectedRegions:
+          type: array
+          items:
+            type: string
+        emotionalValence:
+          type: number
+          description: -1 (fear/danger) to +1 (communication/joy)
+        intensity:
+          type: number
+        waveform:
+          type: array
+          items:
+            type: number
+          description: Sampled waveform data points
+        decayRate:
+          type: number
+        createdAt:
+          type: string
+      required: [id, title, description, resonanceType, frequency, amplitude, propagationRange, epicenterRegion, affectedRegions, emotionalValence, intensity, decayRate, createdAt]
+
+    SeismicEventInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        resonanceType:
+          type: string
+        epicenterRegion:
+          type: string
+        intensity:
+          type: number
+      required: [title, description, resonanceType, epicenterRegion, intensity]
+
+    ResonanceState:
+      type: object
+      properties:
+        globalValence:
+          type: number
+          description: -1 to +1 emotional state of the system
+        dominantResonance:
+          type: string
+        activeFrequencies:
+          type: array
+          items:
+            type: number
+        resonanceMap:
+          type: object
+          additionalProperties:
+            type: number
+          description: Region to resonance intensity mapping
+        groundTruth:
+          type: string
+          description: AI synthesis of what the earth is "feeling"
+        pulseRate:
+          type: number
+        updatedAt:
+          type: string
+      required: [globalValence, dominantResonance, activeFrequencies, resonanceMap, groundTruth, pulseRate, updatedAt]
+
+    PropagationInput:
+      type: object
+      properties:
+        epicenterRegion:
+          type: string
+        intensity:
+          type: number
+        resonanceType:
+          type: string
+      required: [epicenterRegion, intensity, resonanceType]
+
+    PropagationResult:
+      type: object
+      properties:
+        epicenter:
+          type: string
+        waveFronts:
+          type: array
+          items:
+            type: object
+            properties:
+              radiusKm:
+                type: number
+              arrivalTime:
+                type: number
+              intensity:
+                type: number
+              regions:
+                type: array
+                items:
+                  type: string
+            required: [radiusKm, arrivalTime, intensity, regions]
+        totalReach:
+          type: number
+        predictedImpact:
+          type: string
+      required: [epicenter, waveFronts, totalReach, predictedImpact]
+
+    # ─── QUANTUM SCHEMAS ──────────────────────────────────────────────────────
+    QuantumField:
+      type: object
+      properties:
+        fieldStrength:
+          type: number
+        coherence:
+          type: number
+          description: 0-1 quantum coherence level
+        entangledPairs:
+          type: integer
+        fieldLines:
+          type: array
+          items:
+            type: object
+            properties:
+              startX:
+                type: number
+              startY:
+                type: number
+              endX:
+                type: number
+              endY:
+                type: number
+              strength:
+                type: number
+              polarity:
+                type: string
+                enum: [north, south]
+            required: [startX, startY, endX, endY, strength, polarity]
+        attractors:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuantumNode"
+        updatedAt:
+          type: string
+      required: [fieldStrength, coherence, entangledPairs, fieldLines, attractors, updatedAt]
+
+    QuantumNode:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [attractor, repeller, vortex, null_point]
+        label:
+          type: string
+        x:
+          type: number
+          description: Normalized 0-1
+        y:
+          type: number
+          description: Normalized 0-1
+        strength:
+          type: number
+        polarity:
+          type: number
+          description: -1 to +1
+        probability:
+          type: number
+        associatedThreat:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required: [id, type, label, x, y, strength, polarity, probability, createdAt]
+
+    WaveFunctionCollapseInput:
+      type: object
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        observerIntent:
+          type: string
+          nullable: true
+      required: [x, y]
+
+    WaveFunctionCollapseResult:
+      type: object
+      properties:
+        collapsedState:
+          type: string
+        probability:
+          type: number
+        nearbyNodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuantumNode"
+        implication:
+          type: string
+        trainingSignal:
+          type: string
+      required: [collapsedState, probability, nearbyNodes, implication, trainingSignal]
+
+    QuantumSuperposition:
+      type: object
+      properties:
+        branches:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              description:
+                type: string
+              probability:
+                type: number
+              horizon:
+                type: string
+              quantumState:
+                type: string
+              collapsed:
+                type: boolean
+            required: [id, description, probability, horizon, quantumState, collapsed]
+        decoherenceRate:
+          type: number
+        observerEffect:
+          type: string
+        mostLikelyBranch:
+          type: string
+      required: [branches, decoherenceRate, observerEffect, mostLikelyBranch]
+
+    # ─── TEMPORAL SCHEMAS ─────────────────────────────────────────────────────
+    TemporalThreat:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        severity:
+          type: string
+          enum: [critical, high, medium, low, informational]
+        horizonSeconds:
+          type: number
+          description: Seconds until threat materializes (30 to 946080000)
+        horizonLabel:
+          type: string
+          description: Human-readable (30s, 5m, 2h, 3d, 1y, 10y, 30y)
+        probability:
+          type: number
+        domain:
+          type: string
+        indicators:
+          type: array
+          items:
+            type: string
+        mitigations:
+          type: array
+          items:
+            type: string
+        seismicLink:
+          type: integer
+          nullable: true
+          description: Linked seismic event ID
+        quantumNode:
+          type: integer
+          nullable: true
+          description: Linked quantum node ID
+        velocity:
+          type: number
+          description: Rate of change (0-1)
+        createdAt:
+          type: string
+      required: [id, title, description, severity, horizonSeconds, horizonLabel, probability, domain, indicators, mitigations, velocity, createdAt]
+
+    TemporalScanResult:
+      type: object
+      properties:
+        immediateWindow:
+          type: array
+          items:
+            $ref: "#/components/schemas/TemporalThreat"
+        shortTermWindow:
+          type: array
+          items:
+            $ref: "#/components/schemas/TemporalThreat"
+        mediumTermWindow:
+          type: array
+          items:
+            $ref: "#/components/schemas/TemporalThreat"
+        longTermWindow:
+          type: array
+          items:
+            $ref: "#/components/schemas/TemporalThreat"
+        scanTimestamp:
+          type: string
+        systemCalibration:
+          type: number
+      required: [immediateWindow, shortTermWindow, mediumTermWindow, longTermWindow, scanTimestamp, systemCalibration]
+
+    # ─── TRAINING SCHEMAS ─────────────────────────────────────────────────────
+    TrainingStatus:
+      type: object
+      properties:
+        isTraining:
+          type: boolean
+        currentEpoch:
+          type: integer
+        totalEpochs:
+          type: integer
+        loss:
+          type: number
+        accuracy:
+          type: number
+        lastCycleAt:
+          type: string
+          nullable: true
+        nextCycleAt:
+          type: string
+          nullable: true
+        interactionsCollected:
+          type: integer
+        modelsUpdated:
+          type: array
+          items:
+            type: string
+        learningRate:
+          type: number
+        momentum:
+          type: number
+        systemCalibration:
+          type: number
+        activeModules:
+          type: array
+          items:
+            type: string
+      required: [isTraining, currentEpoch, totalEpochs, loss, accuracy, interactionsCollected, modelsUpdated, learningRate, momentum, systemCalibration, activeModules]
+
+    InteractionInput:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [click, hover, expand, collapse, query, seismic_pulse, quantum_collapse, temporal_observe, signal_rate, anomaly_flag]
+        target:
+          type: string
+        value:
+          type: number
+          nullable: true
+        context:
+          type: object
+          nullable: true
+        sessionId:
+          type: string
+          nullable: true
+      required: [type, target]
+
+    InteractionResult:
+      type: object
+      properties:
+        recorded:
+          type: boolean
+        trainingWeight:
+          type: number
+        systemResponse:
+          type: string
+        updatedModel:
+          type: string
+          nullable: true
+      required: [recorded, trainingWeight, systemResponse]
+
+    TrainingCycleResult:
+      type: object
+      properties:
+        cycleId:
+          type: string
+        startedAt:
+          type: string
+        completedAt:
+          type: string
+          nullable: true
+        epochsRun:
+          type: integer
+        lossImprovement:
+          type: number
+        newInsights:
+          type: array
+          items:
+            type: string
+        modelsUpdated:
+          type: array
+          items:
+            type: string
+        interactionsProcessed:
+          type: integer
+        status:
+          type: string
+          enum: [running, completed, failed]
+      required: [cycleId, startedAt, epochsRun, lossImprovement, newInsights, modelsUpdated, interactionsProcessed, status]

@@ -1,0 +1,12 @@
+
+id: string
+goal: string
+inputs:
+  - source: string
+    data: string
+evaluation:
+  metrics:
+    - name: string
+      threshold: number
+memory_update:
+  requires_approval: true

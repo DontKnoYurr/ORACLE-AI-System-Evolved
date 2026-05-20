@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/oracle/"
+title = "ORACLE — Predictive Intelligence Platform"
+version = "1.0.0"
+id = "artifacts/oracle"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/oracle/" ]
+localPort = 19200
+
+[services.development]
+run = "pnpm --filter @workspace/oracle run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/oracle", "run", "build" ]
+publicDir = "artifacts/oracle/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19200"
+BASE_PATH = "/oracle/"
